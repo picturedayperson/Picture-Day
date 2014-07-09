@@ -105,9 +105,9 @@ public class Program
 		Captions captions = gatherCaptions(captionsFile, inputImages);
 		captions.write(captionsFile);
 
-		Files_.copy(Program.class.getResource("sizing.js"), new File(htmlDirectory, "sizing.js"));
-		Files_.copy(Program.class.getResource("imagesloaded.js"), new File(htmlDirectory, "imagesloaded.js"));
-		Files_.copy(Program.class.getResource("style.css"), new File(htmlDirectory, "style.css"));
+		Files_.copy(Program.class.getResourceAsStream("sizing.js"), new File(htmlDirectory, "sizing.js"));
+		Files_.copy(Program.class.getResourceAsStream("imagesloaded.js"), new File(htmlDirectory, "imagesloaded.js"));
+		Files_.copy(Program.class.getResourceAsStream("style.css"), new File(htmlDirectory, "style.css"));
 
 		Action1<List<String>> startHtml = null;
 		Action1<List<String>> finishHtml = null;
