@@ -1,0 +1,3 @@
+Last input directory:  C:\Users\Foom Togarsy\Desktop\photos\San Francisco\Picture Day 1
+Has been used:  true
+Target image widths:  1200, 1050, 900, 800, 700, 550
