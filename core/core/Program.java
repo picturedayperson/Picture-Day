@@ -57,10 +57,13 @@ public class Program
 			System.out.println("you may be left with unneeded images of no-longer-used sizes in the output directory; delete these");
 			System.out.println("yourself if you wish to.");
 			System.out.println("");
+			System.out.println("In addition to the normal HTML files, a set of _fallback HTML files are made for the sake of users whose");
+			System.out.println("browsers can't handle the normal ones for whatever reason.  Link somebody to index_fallback.html if you like.");
+			System.out.println("");
 			System.out.println("(Note:  This program isn't really optimized for low memory usage, so if you load many large input files, you");
-			System.out.println("might run out of memory.  Run with something like -Xmx1200M to give Java more memory.  If even that isn't");
-			System.out.println("enough, then the source code will have to be changed.  This is perfectly feasible but I just didn't bother");
-			System.out.println("with it yet.)");
+			System.out.println("might run out of memory.  Run with a command line option similar to -Xmx1200M to give Java more memory.  If");
+			System.out.println("even that isn't enough, then the source code will have to be changed.  This is perfectly feasible but I just");
+			System.out.println("didn't bother with it yet.)");
 			System.out.println("");
 			System.out.println("Licensing information:");
 			System.out.println("This program's own source code is free for use by anybody for any purpose.");
@@ -209,20 +212,57 @@ public class Program
 			};
 			finishHtml.perform(html);
 			
-			File htmlFile = createFile(htmlDirectory, getIndexFileName(width));
+			String htmlFileName = getIndexFileName(width);
+			File htmlFile = createFile(htmlDirectory, htmlFileName);
 			Files_.write(htmlFile, html);
+			
+			File fallbackHtmlFile = createFile(htmlDirectory, htmlFileName.substring(0, htmlFileName.lastIndexOf('.')) + "_fallback.html");
+			Files_.write(fallbackHtmlFile, makeFallbackVersion(html));
 		}
 
 		final ArrayList<String> html = new ArrayList<>();
 		
 		startHtml.perform(html);
+		html.add("		<div style=\"margin-top: 100px; margin-left: 100px;\">Now loading.  If this doesn't seem to work right, try <a href=\"index_fallback.html\">this simpler version</a>.</div>");
 		html.add("		<div class=\"main-container\" style=\"width: 200px\"></div>");
 		finishHtml.perform(html);
 		
 		File indexFile = createFile(htmlDirectory, "index.html");
 		Files_.write(indexFile, html);
 		
+		ArrayList<String> html_fallback = new ArrayList<>();
+		startHtml.perform(html_fallback); html_fallback = makeFallbackVersion(html_fallback);
+		html_fallback.add("		<div style=\"margin-top: 100px; margin-left: 100px;\">");
+		html_fallback.add("			<div>Choose a picture width:</div>");
+		for (ImageWidth width: relevantWidths)
+		html_fallback.add("			<div><a href=\"index" + width.getValue() + "_fallback.html\">" + width.getValue() + "</a></div>");
+		html_fallback.add("		</div>");
+		finishHtml.perform(html_fallback);
+		
+		File fallbackIndexFile = createFile(htmlDirectory, "index_fallback.html");
+		Files_.write(fallbackIndexFile, html_fallback);
+		
 		System.out.println("done");
+	}
+
+	private static ArrayList<String> makeFallbackVersion(final ArrayList<String> html)
+	{
+		ArrayList<String> html_fallback = new ArrayList<>(html);
+		
+		for (int i = 0; i < html_fallback.size(); i++)
+		{
+			String line = html_fallback.get(i);
+			
+			if (line.contains("script"))
+				html_fallback.remove(i--);
+			
+			if (line.contains("<body>"))
+			{
+				html_fallback.set(i, line.replace("<body>", "<body class=\"fallback\">"));
+				break;
+			}
+		}
+		return html_fallback;
 	}
 
 	private static String getIndexFileName(ImageWidth width)

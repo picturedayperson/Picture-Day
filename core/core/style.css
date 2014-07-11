@@ -128,3 +128,8 @@ body
 	margin-bottom: 50px;
 	font-size: x-large;
 }
+
+.fallback .caption, .fallback .story-coda
+{
+	color: inherit;
+}
